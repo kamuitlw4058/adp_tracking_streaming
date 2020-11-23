@@ -1,0 +1,201 @@
+syntax = "proto3";
+package clickhouse;
+option java_package = "com.xiaoniuhy.adp.pb";
+
+//
+// 当前条记录的事件类型用于合并
+//
+enum AdpEventType {
+  Request = 0;
+  Bid = 1;
+  Win = 2;
+  Impression = 3;
+  Click = 4;
+  Landing = 5;
+}
+
+//
+// 时间信息
+//
+message AdpTimeType{
+  uint64 Time_Year = 1;
+  uint64 Time_Month = 2;
+  uint64 Time_Day = 3;
+  uint64 Time_Hour = 4;
+  uint64 Time_Timestamp = 5;
+}
+
+//
+// 竞价信息，后续多广告主之间也有竞价关系。
+//
+message AdpBidType{
+  uint64 CompanyId = 8;
+  uint64 CampaignId = 9;
+  uint64 AdgroupId = 10;
+  uint64 AdId = 11;
+  uint64 MaterialId = 12;
+}
+
+//
+// 用户和客户端交互的历史记录， 类似于 [[ts,ip],[ts,ip] ]
+//
+message AdpInteractionType{
+  repeated uint64 Timestamp = 1;
+  repeated uint64 Ip = 2;
+}
+
+
+//
+// 模型投放相关结果
+//
+message AdpModelType{
+  uint64 BidPrice = 1;
+  uint64 Pctr = 2;
+  string Tag = 3;
+}
+
+
+//
+// 媒体信息
+//
+message AdpMediaType{
+  uint64 VendorId = 1;
+  string App  = 2;
+  string Ua = 3;
+  string Refer = 4;
+  string Category = 5;
+}
+
+
+//
+// 广告位信息
+//
+message  AdpSlotType{
+  uint64 Height = 1;
+  uint64 Width = 2;
+  uint32 ImpType = 3;
+  uint32 ActionType = 4;
+  uint64 MinPrice = 5;
+  repeated uint64 ViewType = 6;
+  repeated uint64 SupportType = 7;
+}
+
+
+//
+// 设备信息， 其中Id_Type,是一串可能的id的map 类似于 {imei:123,idfa:3312}
+//
+message AdpDeviceType{
+  repeated uint64 Id_Type = 1;
+  repeated string Id_Id = 2;
+  string Os = 3;
+  string OsVersion = 4;
+  string Brand = 5;
+  string Model = 6;
+  string PriceLevel = 7;
+}
+
+//
+// 地理位置信息，城市信息，通过Code编码。
+//
+message AdpGeoType{
+  uint64 Code = 1;
+  float Longitude = 2;
+  float Latitude = 3;
+  string City = 4;
+  string Province = 5;
+
+
+}
+
+message AdpNetworkType{
+  string Ip = 1;
+  string Connection= 2;
+  string Operator = 3;
+  string Carrier = 4;
+}
+
+//
+// 用户画像信息
+//
+message AdpUserType{
+  string Age = 1;
+  string Gender = 2;
+  string Education = 3;
+  string Profession = 4;
+  string ConsumptionLevel = 5 ;
+}
+
+
+//
+// 活跃信息 类似于，活跃列表
+// 详单：[{key:拼多多,day:3,Weight:0.1},{key:王者荣耀,day:15,Weight:0.5}]
+// 分类： [{key:游戏,day:20,Weight:0.7},{key:电商,day:3,Weight:0.1}]
+//
+message AdpActiveType{
+  repeated string Key = 1;
+  repeated uint64 Day = 2;
+  repeated float Weight = 3;
+}
+
+//
+// 字典类型-value为float
+//
+message  AdpFloatMapType{
+  repeated string Key = 1;
+  repeated float Value = 2;
+}
+
+//
+// 字典类型-value为string
+//
+message  AdpStringMapType{
+  repeated string Key = 1;
+  repeated string Value = 2;
+}
+
+//
+// 广告主信息
+//
+message AdpAdvertiserType{
+   uint64 industry_id = 1; // 行业id
+   uint64 advertiser_id = 2;// 广告主id
+   uint64 update_time = 3; //更新时间
+}
+
+//
+// 模型投放结果
+//
+message  AdpModelResultType{
+  repeated  uint64 CampaginId = 1;
+  repeated  string Key = 2;
+  repeated  float Score = 3;
+  repeated  float Threshold = 4;
+}
+
+//
+// TrackingLog信息
+//
+message AdpTrackingLogEvent {
+  string EventDate= 1;
+  string RequestId= 2;
+  uint64  MergeCount = 3;
+  AdpTimeType Time = 4;
+  AdpBidType Bid = 5;
+  AdpInteractionType Impression = 6;
+  AdpInteractionType Click = 7;
+  AdpInteractionType Landing = 8;
+  AdpModelType Model = 9;
+  AdpDeviceType Device = 10;
+  AdpGeoType Geo = 11;
+  AdpUserType User = 12;
+  AdpActiveType App = 13;
+  AdpActiveType AppCategory = 14;
+  AdpAdvertiserType Advertiser  = 15;
+  AdpStringMapType ExtMap = 16;
+  AdpEventType EventType = 17;
+  AdpNetworkType Network = 18;
+  AdpSlotType Slot = 19;
+
+}
+
+

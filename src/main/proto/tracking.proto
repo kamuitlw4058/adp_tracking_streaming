@@ -1,0 +1,76 @@
+syntax="proto3";
+
+package xnad;
+option java_package = "com.xiaoniuhy.adp.pb";
+//option java_package = "com.xiaoniuhy.xnad.tracking";
+option java_multiple_files = true;
+//option java_outer_classname = "AdProto";
+
+message XNBidInfo
+{
+  // ad info
+  int32 advid = 1;
+  int32 campid = 2;
+  int32 planid = 3;
+  
+  int32 crtid = 4;
+  // bid info
+  int64 bidtime = 5;
+  int32 bidtype = 6;  // 类型: CPM CPC OCPM OCPC OCPA
+  int32 fctype = 7;   // 频次控制类型
+  int32 pctr = 8;     // 预估ctr * 10^6
+  int32 pcvr = 9;     // 预估cvr * 10^6
+  string algo_tag = 10; // 算法实验标签
+}
+message ThirdBidInfo
+{
+  string bid_id = 1;
+  string camp_id = 2;
+  string ad_id = 3;
+  string crt_id = 4;
+}
+message BidInfo {
+  // media info
+  int64 req_id = 1;
+  int64 req_time = 2;
+  int32 pub_id = 3;
+  int32 app_id = 4;
+  int32 placement_id = 5;
+  int32 imp_type = 6;
+  // ad info
+  int32 dsp = 10;
+  int32 price = 11;
+  int32 action_type = 12;
+  string crt_size = 13;
+  string ad_pkg = 14;
+  XNBidInfo xn_bi = 15;
+  ThirdBidInfo third_bi = 16;
+  // device info
+  string sdkv = 20;
+  int32 os = 21;
+  string osv = 22;
+  string brand = 23;
+  string model = 24;
+  int32 conn = 25;
+  int32 devtype = 26;
+  string operator = 27;
+  string imei = 28;
+  string oaid = 29;
+  string android_id = 30;
+  string idfa = 31;
+  string idfv = 32;
+  string ip = 33;
+  float lat = 34;
+  float lon = 35;
+};
+
+message TrackingLog
+{
+  BidInfo bid_info = 1;
+  int64 event_time = 2; // 事件事件
+  int32 event_code = 3; // SDK事件码
+  string event_extra_info = 4; // SDK事件参数
+  int64 client_event_time = 5; // 客户端事件时间
+  int64 client_fill_time = 6;  // 客户端广告填充时间
+  int32 conv_event_code = 7; // 广告主回传转化事件
+};
