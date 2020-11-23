@@ -1,4 +1,6 @@
 *.class
 *.lst
+*.pyc
 target
 lib
+src/main/python/pb

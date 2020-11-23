@@ -1,5 +1,6 @@
 package com.xiaoniuhy.adp.tracking_streaming
 
+import scala.collection.mutable.ListBuffer
 import java.util.ArrayList;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord
@@ -98,7 +99,7 @@ object main {
 
   def main(args:Array[String]): Unit ={
     val conf = new SparkConf().setMaster("local[2]").setAppName("NetworkWordCount")
-    val ssc = new StreamingContext(conf, Seconds(5))
+    val ssc = new StreamingContext(conf, Seconds(10))
 
     val kafkaParams = Map[String, Object](
       "bootstrap.servers" -> "172.16.11.1:9092,172.16.11.252:9092,172.16.11.89:9092",
@@ -115,14 +116,15 @@ object main {
       PreferConsistent,
       Subscribe[String, ByteBuffer](topics, kafkaParams)
     )
-
+  stream.print()
     //stream.map(record => print((record.key, record.value)))
 
     stream.foreachRDD { rdd =>
       //val offsetRanges = rdd.asInstanceOf[HasOffsetRanges].offsetRanges
       rdd.foreachPartition { iter =>
-       var arrayRows = new ArrayList[ByteBuffer]();
+       var arrayRows = new ListBuffer[AdpTrackingLogEvent]();
         for(  x <- iter ){
+          print("process row...")
           val log = TrackingLog.parseFrom( x.value())
           var builder = AdpTrackingLogEvent.newBuilder()
           mergeDeivce(builder.getDeviceBuilder(),log.getBidInfo())
@@ -130,9 +132,14 @@ object main {
           mergeGeo(builder.getGeoBuilder(),log.getBidInfo())
           mergeSlot(builder.getSlotBuilder(),log.getBidInfo())
           mergeBid(builder.getBidBuilder(),log.getBidInfo())
-          val row = ByteBuffer.wrap(builder.build().toByteArray())
-          arrayRows.add(row)
+          val row =builder.build()
+          arrayRows += row
         }
+        if(arrayRows.length != 0){
+          sendBatchClient(arrayRows.toList)
+        }
+
+    
         
       }
     }

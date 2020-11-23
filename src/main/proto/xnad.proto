@@ -1,0 +1,153 @@
+syntax="proto3";
+
+package xnad;
+option java_package = "com.xiaoniuhy.xnad";
+option java_multiple_files = true;
+option java_outer_classname = "AdProto";
+
+enum EventType
+{
+    EVENT_UNKNOWN = 0; // 占位
+    EVENT_LOAD_SUCCESS = 1;
+    EVENT_LOAD_FAIL = 2;
+    EVENT_IMP = 3;
+    EVENT_CLICK = 4;
+    EVENT_PLAY_START = 10;
+    EVENT_PLAY_DONE = 11;
+    EVENT_PLAY_VALID = 12;
+    EVENT_PLAY_25 = 13;
+    EVENT_PLAY_50 = 14;
+    EVENT_PLAY_75 = 15;
+/*
+    EVENT_PLAY_PAUSE = 16;
+    EVENT_PLAY_CONTINUE = 17;
+    EVENT_PLAY_MUTE = 18;
+    EVENT_PLAY_UNMUTE = 19;
+    EVENT_PLAY_REPLY = 20;
+*/
+    EVENT_DL_START = 30;
+    EVENT_DL_SUCCESS = 31;
+    EVENT_DL_FAIL = 32;
+    
+    EVENT_DL_INSTALL_START = 33;
+    EVENT_DL_INSTALL_SUCCESS = 34;
+    EVENT_DL_INSTALL_FAIL = 35;
+    
+    EVENT_DEEPLINK_START = 40;
+    EVENT_DEEPLINK_SUCCESS = 41;
+    EVENT_DEEPLINK_FAIL = 42;
+    
+    EVENT_WEBVIEW_START = 50;
+    EVENT_WEBVIEW_SUCCESS = 51;
+    EVENT_WEBVIEW_FAIL = 52;
+};
+enum ConvEventType
+{
+    CONV_GENERIC = 0;
+
+};
+/*
+    操作系统
+ */
+enum OSType
+{
+   OS_ANDROID = 0;
+   OS_IOS = 1;
+}
+/*
+    设备类型
+ */
+enum DeviceType
+{
+    DEVTYPE_PHONE = 0;
+    DEVTYPE_TABLET = 1;
+}
+
+/*
+    设备方向
+ */
+enum DeviceOrientation
+{
+    DEVORI_PORTRAIT = 0;
+    DEVORI_LANDSCAPE = 1;
+};
+
+/*
+    网络连接状态
+ */
+enum DeviceConnectionType
+{
+    DEVCONN_UNKNOWN = 0;
+    DEVCONN_WIFI = 1;
+    DEVCONN_CELL_2G = 2;
+    DEVCONN_CELL_3G = 3;
+    DEVCONN_CELL_4G = 4;
+    DEVCONN_CELL_5G = 5;
+};
+/*
+    交互类型
+ */
+ 
+enum ActionType
+{
+    ACT_EXTERNAL_URL = 0;
+    ACT_DOWNLOAD_APK = 1;
+};
+
+/*
+    展示类型
+ */
+enum ImpType
+{
+    IMP_UNKNOWN = 0; // 占位
+    IMP_FEED = 1;
+    IMP_SPLASH = 2;
+    IMP_INTERSTITIAL = 3;
+    IMP_REWARDED_VIDEO = 4;
+};
+/*
+    广告布局样式
+ */
+enum LayoutType
+{
+    LAYOUT_UNKNOWN = 0; // 占位
+    LAYOUT_IMAGE_PORTRAIT = 1;  // 竖版大图
+    LAYOUT_IMAGE_LANDSCAPE = 2; // 横版大图
+    LAYOUT_VIDEO_PORTRAIT = 3;  // 竖版视频
+    LAYOUT_VIDEO_LANDSCAPE = 4; // 横版视频
+    LAYOUT_FEED_IMAGES_1 = 5;   // FEED单图
+    LAYOUT_FEED_IMAGES_2 = 6;   // FEED双图
+    LAYOUT_FEED_IMAGES_3 = 7;   // FEED三图
+    LAYOUT_FEED_IMAGE_TEXT = 8; // FEED图文
+    LAYOUT_FEED_VIDEO = 9;      // FEED单视频
+    LAYOUT_FEED_VIDEO_TEXT = 10;// FEED单视频
+};
+
+/*
+    创意模板
+ */
+
+enum TemplateType
+{
+    TEMPLATE_UNKNOWN = 0; // 占位
+    TEMPLATE_SPLASH_IMAGE_PORTRAIT = 1;        // 开屏-竖版大图
+    TEMPLATE_SPLASH_IMAGE_LANDSCAPE = 2;       // 开屏-横版大图
+    TEMPLATE_SPLASH_VIDEO_PORTRAIT = 3;        // 开屏-竖版视频
+    TEMPLATE_SPLASH_VIDEO_LANDSCAPE = 4;       // 开屏-横版视频
+    TEMPLATE_INTERSTITIAL_IMAGE_PORTRAIT = 5;  // 插屏-竖版大图
+    TEMPLATE_INTERSTITIAL_IMAGE_LANDSCAPE = 6; // 插屏-横版大图
+    TEMPLATE_INTERSTITIAL_VIDEO_PORTRAIT = 7;  // 插屏-竖版视频
+    TEMPLATE_INTERSTITIAL_VIDEO_LANDSCAPE = 8; // 插屏-横版视频
+    TEMPLATE_FEED_IMAGES_1 = 9;                // FEED-单图
+    TEMPLATE_FEED_IMAGES_2 = 10;               // FEED-双图
+    TEMPLATE_FEED_IMAGES_3 = 11;               // FEED-三图
+    TEMPLATE_FEED_IMAGE_TEXT_LR = 12;          // FEED-左图右文
+    TEMPLATE_FEED_IMAGE_TEXT_RL = 13;          // FEED-右图左文
+    TEMPLATE_FEED_IMAGE_TEXT_TB = 14;          // FEED-上图下文
+    TEMPLATE_FEED_IMAGE_TEXT_BT = 15;          // FEED-下图上文
+    TEMPLATE_FEED_VIDEO = 16;                  // FEED-单视频
+    TEMPLATE_FEED_VIDEO_TEXT_LR = 17;          // FEED-左视频右文
+    TEMPLATE_FEED_VIDEO_TEXT_RL = 18;          // FEED-右视频左文
+    TEMPLATE_FEED_VIDEO_TEXT_TB = 19;          // FEED-上视频下文
+    TEMPLATE_FEED_VIDEO_TEXT_BT = 20;          // FEED-下视频上文
+};
