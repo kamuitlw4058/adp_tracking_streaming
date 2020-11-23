@@ -22,8 +22,9 @@ tracking_log.bid_info.xn_bi.advid = 100
 tracking_log.bid_info.xn_bi.campid = 1000
 tracking_log.bid_info.xn_bi.planid = 10000
 
-
+#['172.16.11.1:9092','172.16.11.252:9092','172.16.11.89:9092']
 kafka_client = KafkaClient(['172.16.11.1:9092','172.16.11.252:9092','172.16.11.89:9092'],topic='adp_test',group_id='test_group')
+#kafka_client = KafkaClient('172.16.11.1:9092',topic='adp_test',group_id='test_group')
 d = kafka_client.read()
 for i in kafka_client.read():
     print(i)

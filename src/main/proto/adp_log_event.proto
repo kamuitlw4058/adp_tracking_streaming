@@ -18,11 +18,11 @@ enum AdpEventType {
 // 时间信息
 //
 message AdpTimeType{
-  uint64 Time_Year = 1;
-  uint64 Time_Month = 2;
-  uint64 Time_Day = 3;
-  uint64 Time_Hour = 4;
-  uint64 Time_Timestamp = 5;
+  uint64 Year = 1;
+  uint64 Month = 2;
+  uint64 Day = 3;
+  uint64 Hour = 4;
+  uint64 Timestamp = 5;
 }
 
 //

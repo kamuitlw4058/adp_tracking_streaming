@@ -2,6 +2,11 @@ package com.xiaoniuhy.adp.tracking_streaming
 
 import scala.collection.mutable.ListBuffer
 import java.util.ArrayList;
+import scala.collection.JavaConverters._
+import java.text.SimpleDateFormat 
+
+import scala.collection.immutable.StringLike
+
 
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.apache.kafka.common.serialization.StringDeserializer
@@ -23,6 +28,7 @@ import org.apache.thrift.transport.TTransportException;
 import com.xiaoniuhy.adp.thrift.LogEventService
 
 import com.xiaoniuhy.adp.pb.TrackingLog
+import com.xiaoniuhy.xnad.EventType
 import com.xiaoniuhy.adp.pb.BidInfo
 import com.xiaoniuhy.adp.pb.AdpLogEvent.AdpTrackingLogEvent
 import com.xiaoniuhy.adp.pb.AdpLogEvent.AdpDeviceType
@@ -30,6 +36,9 @@ import com.xiaoniuhy.adp.pb.AdpLogEvent.AdpNetworkType
 import com.xiaoniuhy.adp.pb.AdpLogEvent.AdpGeoType
 import com.xiaoniuhy.adp.pb.AdpLogEvent.AdpSlotType
 import com.xiaoniuhy.adp.pb.AdpLogEvent.AdpBidType
+import com.xiaoniuhy.adp.pb.AdpLogEvent.AdpTimeType
+import com.xiaoniuhy.adp.pb.AdpLogEvent.AdpEventType
+
 
 object main {
 
@@ -60,6 +69,12 @@ object main {
         }
         return event;
     }
+
+
+
+  def mergeTime(builder:AdpTimeType.Builder, trackingLog: TrackingLog)={
+      builder.setTimestamp(trackingLog.getEventTime())
+  }
 
 
   def mergeDeivce(builder:AdpDeviceType.Builder, bidInfo: BidInfo)={
@@ -96,9 +111,18 @@ object main {
       //builder.setPlanid(xn_bi.getPlanid())
 
   }
+def matchEventCode(x: Int): AdpEventType = x match {
+      case EventType.EVENT_IMP_VALUE => AdpEventType.Impression
+      case EventType.EVENT_CLICK_VALUE => AdpEventType.Click
+      case _ => AdpEventType.UNRECOGNIZED
+   }
 
   def main(args:Array[String]): Unit ={
-    val conf = new SparkConf().setMaster("local[2]").setAppName("NetworkWordCount")
+    val conf = new SparkConf().setMaster("local[2]") 
+    .setAppName("NetworkWordCount") 
+    .set("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
+
+
     val ssc = new StreamingContext(conf, Seconds(10))
 
     val kafkaParams = Map[String, Object](
@@ -120,13 +144,16 @@ object main {
     //stream.map(record => print((record.key, record.value)))
 
     stream.foreachRDD { rdd =>
-      //val offsetRanges = rdd.asInstanceOf[HasOffsetRanges].offsetRanges
+      val offsetRanges = rdd.asInstanceOf[HasOffsetRanges].offsetRanges
       rdd.foreachPartition { iter =>
        var arrayRows = new ListBuffer[AdpTrackingLogEvent]();
         for(  x <- iter ){
-          print("process row...")
           val log = TrackingLog.parseFrom( x.value())
           var builder = AdpTrackingLogEvent.newBuilder()
+          builder.setRequestId(log.getBidInfo().getReqId().toString())
+          val eventCode = log.getEventCode()
+          builder.setEventType(matchEventCode(eventCode))
+          mergeTime(builder.getTimeBuilder(),log)
           mergeDeivce(builder.getDeviceBuilder(),log.getBidInfo())
           mergeNetwork(builder.getNetworkBuilder(),log.getBidInfo())
           mergeGeo(builder.getGeoBuilder(),log.getBidInfo())
@@ -139,9 +166,10 @@ object main {
           sendBatchClient(arrayRows.toList)
         }
 
-    
         
       }
+      stream.asInstanceOf[CanCommitOffsets].commitAsync(offsetRanges)
+
     }
 
     ssc.start()             // Start the computation

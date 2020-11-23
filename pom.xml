@@ -21,11 +21,11 @@
 
 
   <dependencies>
-    <dependency>
+    <!-- <dependency>
         <groupId>org.scala-lang</groupId>
         <artifactId>scala-library</artifactId>
-        <version>2.11.12</version>
-    </dependency>
+        <version>2.11.8</version>
+    </dependency> -->
         <dependency>
       <groupId>com.google.protobuf</groupId>
       <artifactId>protobuf-java</artifactId>
@@ -33,7 +33,7 @@
     </dependency>
     <dependency>
         <groupId>org.apache.spark</groupId>
-        <artifactId>spark-core_2.12</artifactId>
+        <artifactId>spark-core_2.11</artifactId>
         <version>${spark.version}</version>
      </dependency>
     <dependency>
