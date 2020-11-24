@@ -25,19 +25,19 @@ import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
 import org.apache.thrift.transport.TTransportException;
 
-import com.xiaoniuhy.adp.thrift.LogEventService
+import com.xiaoniuhy.adp.thrift.EventMergeService
 
-import com.xiaoniuhy.adp.pb.TrackingLog
-import com.xiaoniuhy.xnad.EventType
-import com.xiaoniuhy.adp.pb.BidInfo
-import com.xiaoniuhy.adp.pb.AdpLogEvent.AdpTrackingLogEvent
-import com.xiaoniuhy.adp.pb.AdpLogEvent.AdpDeviceType
-import com.xiaoniuhy.adp.pb.AdpLogEvent.AdpNetworkType
-import com.xiaoniuhy.adp.pb.AdpLogEvent.AdpGeoType
-import com.xiaoniuhy.adp.pb.AdpLogEvent.AdpSlotType
-import com.xiaoniuhy.adp.pb.AdpLogEvent.AdpBidType
-import com.xiaoniuhy.adp.pb.AdpLogEvent.AdpTimeType
-import com.xiaoniuhy.adp.pb.AdpLogEvent.AdpEventType
+import com.xiaoniuhy.adp.pb.tracking.TrackingLog
+import com.xiaoniuhy.adp.pb.EventType
+import com.xiaoniuhy.adp.pb.tracking.BidInfo
+import com.xiaoniuhy.adp.pb.clickhouse.AdpTrackingLogEvent
+import com.xiaoniuhy.adp.pb.clickhouse.AdpDeviceType
+import com.xiaoniuhy.adp.pb.clickhouse.AdpNetworkType
+import com.xiaoniuhy.adp.pb.clickhouse.AdpGeoType
+import com.xiaoniuhy.adp.pb.clickhouse.AdpSlotType
+import com.xiaoniuhy.adp.pb.clickhouse.AdpBidType
+import com.xiaoniuhy.adp.pb.clickhouse.AdpTimeType
+import com.xiaoniuhy.adp.pb.clickhouse.AdpEventType
 
 
 object main {
@@ -49,7 +49,7 @@ object main {
             tTransport = new TSocket("localhost", 8989, 30000);
             // 协议要和服务端一致
             var protocol = new TBinaryProtocol(tTransport);
-            var client = new LogEventService.Client(protocol);
+            var client = new EventMergeService.Client(protocol);
             tTransport.open();
             var trackingEventsBytes = new ArrayList[ByteBuffer]();
             for(tmp <- trackingEvents){
@@ -105,16 +105,16 @@ object main {
 
   def mergeBid(builder:AdpBidType.Builder, bidInfo: BidInfo)={
       val xn_bi = bidInfo.getXnBi()
-
       builder.setCompanyId(xn_bi.getAdvid())
       builder.setCampaignId(xn_bi.getCampid())
       //builder.setPlanid(xn_bi.getPlanid())
-
   }
+
 def matchEventCode(x: Int): AdpEventType = x match {
       case EventType.EVENT_IMP_VALUE => AdpEventType.Impression
       case EventType.EVENT_CLICK_VALUE => AdpEventType.Click
       case _ => AdpEventType.UNRECOGNIZED
+      
    }
 
   def main(args:Array[String]): Unit ={
