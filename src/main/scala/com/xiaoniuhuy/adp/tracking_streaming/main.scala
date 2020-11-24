@@ -27,8 +27,10 @@ import org.apache.thrift.transport.TTransportException;
 
 import com.xiaoniuhy.adp.thrift.EventMergeService
 
+import com.xiaoniuhy.adp.pb.utils.TypeConvertUtils
+
 import com.xiaoniuhy.adp.pb.tracking.TrackingLog
-import com.xiaoniuhy.adp.pb.EventType
+import com.xiaoniuhy.adp.pb.tracking.EventType
 import com.xiaoniuhy.adp.pb.tracking.BidInfo
 import com.xiaoniuhy.adp.pb.clickhouse.AdpTrackingLogEvent
 import com.xiaoniuhy.adp.pb.clickhouse.AdpDeviceType
@@ -71,52 +73,6 @@ object main {
     }
 
 
-
-  def mergeTime(builder:AdpTimeType.Builder, trackingLog: TrackingLog)={
-      builder.setTimestamp(trackingLog.getEventTime())
-  }
-
-
-  def mergeDeivce(builder:AdpDeviceType.Builder, bidInfo: BidInfo)={
-      builder.setOs(bidInfo.getOs().toString())
-      builder.setOsVersion(bidInfo.getOsv())
-      builder.setBrand(bidInfo.getBrand())
-      builder.setModel(bidInfo.getModel())
-  }
-
-  def mergeNetwork(builder:AdpNetworkType.Builder, bidInfo: BidInfo)={
-      builder.setConnection(bidInfo.getConn().toString())
-      builder.setOperator(bidInfo.getOperator())
-      builder.setIp(bidInfo.getIp())
-      //builder.setCarrier(bidInfo.getCarrier())
-  }
-
-  def mergeGeo(builder:AdpGeoType.Builder, bidInfo: BidInfo)={
-      builder.setLatitude(bidInfo.getLat())
-      builder.setLongitude(bidInfo.getLon())
-      // builder.setCity(bidInfo.getCity())
-      // builder.setProvince(bidInfo.getProvince())
-  }
-
-  def mergeSlot(builder:AdpSlotType.Builder, bidInfo: BidInfo)={
-      builder.setImpType(bidInfo.getImpType())
-      builder.setActionType(bidInfo.getActionType())
-  }
-
-  def mergeBid(builder:AdpBidType.Builder, bidInfo: BidInfo)={
-      val xn_bi = bidInfo.getXnBi()
-      builder.setCompanyId(xn_bi.getAdvid())
-      builder.setCampaignId(xn_bi.getCampid())
-      //builder.setPlanid(xn_bi.getPlanid())
-  }
-
-def matchEventCode(x: Int): AdpEventType = x match {
-      case EventType.EVENT_IMP_VALUE => AdpEventType.Impression
-      case EventType.EVENT_CLICK_VALUE => AdpEventType.Click
-      case _ => AdpEventType.UNRECOGNIZED
-      
-   }
-
   def main(args:Array[String]): Unit ={
     val conf = new SparkConf().setMaster("local[2]") 
     .setAppName("NetworkWordCount") 
@@ -149,17 +105,7 @@ def matchEventCode(x: Int): AdpEventType = x match {
        var arrayRows = new ListBuffer[AdpTrackingLogEvent]();
         for(  x <- iter ){
           val log = TrackingLog.parseFrom( x.value())
-          var builder = AdpTrackingLogEvent.newBuilder()
-          builder.setRequestId(log.getBidInfo().getReqId().toString())
-          val eventCode = log.getEventCode()
-          builder.setEventType(matchEventCode(eventCode))
-          mergeTime(builder.getTimeBuilder(),log)
-          mergeDeivce(builder.getDeviceBuilder(),log.getBidInfo())
-          mergeNetwork(builder.getNetworkBuilder(),log.getBidInfo())
-          mergeGeo(builder.getGeoBuilder(),log.getBidInfo())
-          mergeSlot(builder.getSlotBuilder(),log.getBidInfo())
-          mergeBid(builder.getBidBuilder(),log.getBidInfo())
-          val row =builder.build()
+          val row =  TypeConvertUtils.trackingLog2ClickhouseLog(log)
           arrayRows += row
         }
         if(arrayRows.length != 0){
